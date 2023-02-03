@@ -20,6 +20,10 @@ For all models, the [Asirra Dataset](https://www.kaggle.com/c/dogs-vs-cats/data)
 | model_3-4 | 10 | VGG-3 with Dropout and Image Data Augmentation | 81,99% | 84,597% | 00:21:17 |
 | model_3-4 | 50 | VGG-3 with Dropout and Image Data Augmentation | 91,09% | 91,513% | 01:46:30 |
 
+Hardware used for training these models:
+
+Apple MacBook Air | Apple M1 Chip | 16 GB RAM | 8 CPU Cores | 8 GPU Cores
+
 ## Thoughts and Remarks
 
 Some remarks.
