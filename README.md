@@ -7,7 +7,7 @@ By Sarah Hägele & Sandro Bühler
 ---
 
 ## Models
-For all models, the [Asirra Dataset](https://www.kaggle.com/c/dogs-vs-cats/data) was split into a subset of 22.500 training images and 2.500 validation images.
+For all models, the [Asirra Dataset](https://www.kaggle.com/c/dogs-vs-cats/data) was split of 80% for training and 20% for validation.
 
 | Model | Epochs | Architecture | Training Accuracy | Validation Accuracy | Time |
 |---|---|---|---|---|---|
