@@ -1,2 +1,6 @@
 /data/*
 /test/*
+/dataset/*
+/original_dataset/*
+*.DS_Store
+*.code-workspace
