@@ -2,5 +2,6 @@
 /test/*
 /dataset/*
 /original_dataset/*
+*.h5
 *.DS_Store
 *.code-workspace
