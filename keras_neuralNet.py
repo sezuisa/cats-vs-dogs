@@ -117,7 +117,7 @@ def run_test_harness(count_of_epochs, model_number):
 #----------------------------------------------------------------------------------------
 file_name_result = "files_keras/results"+ str(NOW) + ".csv"
 with open(file_name_result, "a") as myfile:
-	myfile.write("model_number;datetime;elapsed_time;acc")
+	myfile.write("model_number;datetime;elapsed_time;acc"+ "\n")
 
 	for i in range(MODELS):
 		#start timer
@@ -132,7 +132,7 @@ with open(file_name_result, "a") as myfile:
 		#stop timer
 		time_end = time.time()
 		time_elapsed = time_end - time_begin
-		myfile.write(str(MODELS) + ";" + str(NOW) +";" + str(time_elapsed) + ";" + str(acc)+"\n")
+		myfile.write(str(i) + ";" + str(NOW) +";" + str(time_elapsed) + ";" + str(acc)+"\n")
 	
 
 
