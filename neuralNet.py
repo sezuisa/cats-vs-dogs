@@ -11,9 +11,10 @@ from keras import layers
 from keras.models import Sequential
 from keras.layers import Activation, Dropout, Flatten, Dense
 from keras.layers import Conv2D, MaxPooling2D
-from keras.utils import image_dataset_from_directory
+#from keras.utils import image_dataset_from_directory
 from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
+
 
 import matplotlib.image as mpimg
 from datetime import datetime
@@ -183,7 +184,7 @@ history = model.fit(train_data,
         steps_per_epoch=len(train_data),
         validation_data=test_data, 
         validation_steps=len(test_data), 
-        epochs=50, 
+        epochs=100, 
         verbose=1)
 
 # evaluate model
