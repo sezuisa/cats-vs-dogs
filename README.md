@@ -20,7 +20,7 @@ For all models, the [Asirra Dataset](https://www.kaggle.com/c/dogs-vs-cats/data)
 | model_3-4 | 10 | VGG-3 with Dropout and Image Data Augmentation | 81,99% | 84,597% | 00:21:17 | Sarah Hägele |
 | model_3-4 | 50 | VGG-3 with Dropout and Image Data Augmentation | 91,09% | 91,513% | 01:46:30 | Sarah Hägele |
 | model_3-4 | 100 | VGG-3 with Dropout and Image Data Augmentation | 92,77% | 93,46% | 17:23:05 | Sandro Bühler (CPU only) |
-| model_3-4 | 100 | VGG-3 with Dropout and Image Data Augmentation | 92,96% | 93,95% | 5:57:47 | Sandro Bühler (CPU + GPU)|
+| model_3-4 | 100 | VGG-3 with Dropout and Image Data Augmentation | 92,96% | 93,95% | 05:57:47 | Sandro Bühler (CPU + GPU)|
 
 Hardware used for training these models:
 Sarah Hägele:
