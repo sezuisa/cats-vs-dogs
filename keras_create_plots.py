@@ -9,5 +9,5 @@ acc = df['acc']
 model_number = df['model_number']
 elapsed_time = df['elapsed_time']
 
-plt.plot(model_number, acc)
+plt.plot(model_number, acc, 'o')
 plt.show()
