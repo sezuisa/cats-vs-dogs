@@ -15,7 +15,6 @@ from keras.utils import image_dataset_from_directory
 from keras.preprocessing.image import ImageDataGenerator
 from keras import optimizers
 
-
 import matplotlib.image as mpimg
 from datetime import datetime
 from os import makedirs
@@ -23,77 +22,55 @@ from os import listdir
 from shutil import copyfile
 from random import seed
 from random import random
+import time
 
-base_dir = 'data'
-model_no = '3-4'
-seedNum = 1
-default_opt = optimizers.Adam(learning_rate=0.001)
+#---------------------------------
+# CONSTANTS
+EPOCHS = 10
+RUNS = 10
+TIMESTAMP = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+BASE_DIR = 'data'
+MODEL_NO = '3-2'
+SEED_NUM = 1
+DEFAULT_OPT = optimizers.Adam(learning_rate=0.001)
 
 # ----------- Prepare datasets
+def prepare_datasets():
+    # create directories
+    dataset_home = 'dataset/'
+    subdirs = ['train/', 'test/']
+    for subdir in subdirs:
+        # create label subdirectories
+        labeldirs = ['dogs/', 'cats/']
+        for labldir in labeldirs:
+            newdir = dataset_home + subdir + labldir
+            makedirs(newdir, exist_ok=True)
 
-# train_data = image_dataset_from_directory(base_dir,
-#                                                 image_size=(200,200),
-#                                                 subset='training',
-#                                                 seed = seedNum,
-#                                                 label_mode='binary',
-#                                                 validation_split=0.2,
-#                                                 batch_size= 64)
-# test_data = image_dataset_from_directory(base_dir,
-#                                                 image_size=(200,200),
-#                                                 subset='validation',
-#                                                 seed = seedNum,
-#                                                 label_mode='binary',
-#                                                 validation_split=0.2,
-#                                                 batch_size= 64)
+    # seed random number generator
+    seed(SEED_NUM)
 
+    # define ratio of pictures to use for validation
+    val_ratio = 0.2
 
-
-
-# create directories
-dataset_home = 'dataset/'
-subdirs = ['train/', 'test/']
-for subdir in subdirs:
-	# create label subdirectories
-	labeldirs = ['dogs/', 'cats/']
-	for labldir in labeldirs:
-		newdir = dataset_home + subdir + labldir
-		makedirs(newdir, exist_ok=True)
-# seed random number generator
-seed(seedNum)
-# define ratio of pictures to use for validation
-val_ratio = 0.2
-# copy training dataset images into subdirectories
-src_directory = 'original_dataset/'
-for file in listdir(src_directory):
-	src = src_directory + '/' + file
-	dst_dir = 'train/'
-	if random() < val_ratio:
-		dst_dir = 'test/'
-	if file.startswith('cat'):
-		dst = dataset_home + dst_dir + 'cats/'  + file
-		copyfile(src, dst)
-	elif file.startswith('dog'):
-		dst = dataset_home + dst_dir + 'dogs/'  + file
-		copyfile(src, dst)
-
-test_datagen = ImageDataGenerator(rescale=1.0/255.0)
-train_datagen = test_datagen
-if model_no == '3-3' or model_no == '3-4':
-    train_datagen = ImageDataGenerator(rescale=1.0/255.0,
-            width_shift_range=0.1, height_shift_range=0.1, horizontal_flip=True)
-
-train_data = train_datagen.flow_from_directory('dataset/train/',
-            class_mode='binary', batch_size=64, target_size=(200, 200))
-test_data = test_datagen.flow_from_directory('dataset/test/',
-            class_mode='binary', batch_size=64, target_size=(200, 200))
-
-
+    # copy training dataset images into subdirectories
+    src_directory = 'original_dataset/'
+    for file in listdir(src_directory):
+        src = src_directory + '/' + file
+        dst_dir = 'train/'
+        if random() < val_ratio:
+            dst_dir = 'test/'
+        if file.startswith('cat'):
+            dst = dataset_home + dst_dir + 'cats/'  + file
+            copyfile(src, dst)
+        elif file.startswith('dog'):
+            dst = dataset_home + dst_dir + 'dogs/'  + file
+            copyfile(src, dst)
 
 # ----------- Define the model
 def define_model(model_no):
     model = Sequential()
     # Model 1: VGG-1
-    if model_no == '1' or model_no == '1-2':
+    if model_no == '1':
         model.add(Conv2D(32, (3, 3), activation='relu', kernel_initializer='he_uniform', padding='same', input_shape=(200, 200, 3)))
         model.add(MaxPooling2D((2, 2)))
         model.add(Flatten())
@@ -158,49 +135,83 @@ def define_model(model_no):
         raise ValueError('Undefined model number!')
 
 	# compile model
-    model.compile(optimizer=default_opt, loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=DEFAULT_OPT, loss='binary_crossentropy', metrics=['accuracy'])
     return model
 
+# ----------- Plot diagnostic curves
+def plot_diagnostics(history):
+    # plot loss
+	plt.subplot(211)
+	plt.title('Cross Entropy Loss')
+	plt.plot(history.history['loss'], color='blue', label='train')
+	plt.plot(history.history['val_loss'], color='orange', label='test')
+        
+	# plot accuracy
+	plt.subplot(212)
+	plt.title('Classification Accuracy')
+	plt.plot(history.history['accuracy'], color='blue', label='train')
+	plt.plot(history.history['val_accuracy'], color='orange', label='test')
+        
+	# save plot to file
+	plt.savefig('./files/plots/' + str(TIMESTAMP) + '_model_' + MODEL_NO + '_plot.png')
+	plt.close()
+
 # ----------- Train and test model
+def run_model():
+    model = define_model(MODEL_NO)
 
-startTime = datetime.now()
-tf.random.set_seed(seedNum)
+    test_datagen = ImageDataGenerator(rescale=1.0/255.0)
+    train_datagen = test_datagen
+    if MODEL_NO == '3-3' or MODEL_NO == '3-4':
+        train_datagen = ImageDataGenerator(rescale=1.0/255.0,
+                width_shift_range=0.1, height_shift_range=0.1, horizontal_flip=True)
 
-model = define_model(model_no)
+    train_data = train_datagen.flow_from_directory('dataset/train/',
+                class_mode='binary', batch_size=64, target_size=(200, 200))
+    test_data = test_datagen.flow_from_directory('dataset/test/',
+                class_mode='binary', batch_size=64, target_size=(200, 200))
+    
+    # fit the model
+    history = model.fit(train_data,
+            steps_per_epoch=len(train_data),
+            validation_data=test_data, 
+            validation_steps=len(test_data), 
+            epochs=EPOCHS, 
+            verbose=1)
 
-model.summary()
+    # evaluate model
+    _, acc = model.evaluate(test_data, steps=len(test_data), verbose=0)
 
-# visualise model
-keras.utils.plot_model(
-    model,
-    to_file='files/model_' + model_no + '.png',
-    show_shapes=True,
-    show_dtype=True,
-    show_layer_activations=True
-)
+    # plot curves
+    plot_diagnostics(history)
 
-# fit the model
-history = model.fit(train_data,
-        steps_per_epoch=len(train_data),
-        validation_data=test_data, 
-        validation_steps=len(test_data), 
-        epochs=50, 
-        verbose=1)
+    # save model
+    model.save('files/models/' + str(TIMESTAMP) + '_model_' + MODEL_NO + '.h5')
+    return (acc * 100.0)
 
-# evaluate model
-_, acc = model.evaluate(test_data, steps=len(test_data), verbose=0)
-print('> %.3f' % (acc * 100.0))
+#----------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------
 
-# save model
-model.save("models/model_" + model_no + ".h5", overwrite=True)
+# create file to save diagnostics
+file_name_result = 'files/results/' + str(TIMESTAMP) + '_model_' + MODEL_NO + ".csv"
 
-print('Total time for processing model_' + model_no + ':', (datetime.now() - startTime))
+with open(file_name_result, 'a+') as file:
+    file.write('iteration;datetime;elapsed_time;acc' + '\n')
 
-# save accuracy and loss diagrams
-history_df = pd.DataFrame(history.history)
-history_df.loc[:, ['loss', 'val_loss']].plot()
-history_df.loc[:, ['accuracy', 'val_accuracy']].plot()
-fig_nums = plt.get_fignums()
-figs = [plt.figure(n) for n in fig_nums]
-figs[0].savefig("files/model_" + model_no + "_loss.png")
-figs[1].savefig("files/model_" + model_no + "_accuracy.png")
+    # execute training runs
+    for i in range(RUNS):
+        #start timer
+        time_begin = time.time()
+
+        #create new env for training
+        prepare_datasets()
+
+        #run model
+        acc = run_model()
+
+        #stop timer
+        time_end = time.time()
+        time_elapsed = time_end - time_begin
+        print('Accuracy: ' + acc)
+        print('Total time for processing model_' + MODEL_NO + ': ' + str(time_elapsed))
+        file.write(str(i + 1) + ';' + str(TIMESTAMP) + ';' + str(time_elapsed) + ';' + str(acc) + '\n')
