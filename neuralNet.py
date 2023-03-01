@@ -212,6 +212,6 @@ with open(file_name_result, 'a+') as file:
         #stop timer
         time_end = time.time()
         time_elapsed = time_end - time_begin
-        print('Accuracy: ' + acc)
+        print('Accuracy: ' + str(acc))
         print('Total time for processing model_' + MODEL_NO + ': ' + str(time_elapsed))
         file.write(str(i + 1) + ';' + str(TIMESTAMP) + ';' + str(time_elapsed) + ';' + str(acc) + '\n')
