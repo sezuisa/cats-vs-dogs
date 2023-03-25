@@ -17,22 +17,23 @@ from keras import optimizers
 
 import matplotlib.image as mpimg
 from datetime import datetime
-from os import makedirs
-from os import listdir
+from os import makedirs, listdir, path
 from shutil import copyfile
 from random import seed
 from random import random
 import time
+import sys
 
 #---------------------------------
 # CONSTANTS
-EPOCHS = 10
-RUNS = 10
+EPOCHS = 50
+RUNS = 1
 TIMESTAMP = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 BASE_DIR = 'data'
-MODEL_NO = '3-2'
+MODEL_NO = '3-4'
 SEED_NUM = 1
 DEFAULT_OPT = optimizers.Adam(learning_rate=0.001)
+ITERATION = sys.argv[1]
 
 # ----------- Prepare datasets
 def prepare_datasets():
@@ -139,7 +140,7 @@ def define_model(model_no):
     return model
 
 # ----------- Plot diagnostic curves
-def plot_diagnostics(history):
+def plot_diagnostics(history, iteration):
     # plot loss
 	plt.subplot(211)
 	plt.title('Cross Entropy Loss')
@@ -153,11 +154,11 @@ def plot_diagnostics(history):
 	plt.plot(history.history['val_accuracy'], color='orange', label='test')
         
 	# save plot to file
-	plt.savefig('./files/plots/' + str(TIMESTAMP) + '_model_' + MODEL_NO + '_plot.png')
+	plt.savefig('./files/plots/' + str(TIMESTAMP) + '_model_' + MODEL_NO + '_it_' + str(iteration) + '_plot.png')
 	plt.close()
 
 # ----------- Train and test model
-def run_model():
+def run_model(iteration):
     model = define_model(MODEL_NO)
 
     test_datagen = ImageDataGenerator(rescale=1.0/255.0)
@@ -178,22 +179,23 @@ def run_model():
             validation_steps=len(test_data), 
             epochs=EPOCHS, 
             verbose=1)
+    
+    model.save('files/models/' + str(TIMESTAMP) + '_model_' + MODEL_NO + '_it_' + str(iteration) + '.h5')
 
     # evaluate model
     _, acc = model.evaluate(test_data, steps=len(test_data), verbose=0)
 
     # plot curves
-    plot_diagnostics(history)
+    plot_diagnostics(history, iteration)
+    
 
-    # save model
-    model.save('files/models/' + str(TIMESTAMP) + '_model_' + MODEL_NO + '.h5')
     return (acc * 100.0)
 
 #----------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------
 
 # create file to save diagnostics
-file_name_result = 'files/results/' + str(TIMESTAMP) + '_model_' + MODEL_NO + ".csv"
+file_name_result = 'files/results/model_' + MODEL_NO + ".csv"
 
 with open(file_name_result, 'a+') as file:
     file.write('iteration;datetime;elapsed_time;acc' + '\n')
@@ -207,11 +209,11 @@ with open(file_name_result, 'a+') as file:
         prepare_datasets()
 
         #run model
-        acc = run_model()
+        acc = run_model(ITERATION)
 
         #stop timer
         time_end = time.time()
         time_elapsed = time_end - time_begin
         print('Accuracy: ' + str(acc))
         print('Total time for processing model_' + MODEL_NO + ': ' + str(time_elapsed))
-        file.write(str(i + 1) + ';' + str(TIMESTAMP) + ';' + str(time_elapsed) + ';' + str(acc) + '\n')
+        file.write(str(ITERATION) + ';' + str(TIMESTAMP) + ';' + str(time_elapsed) + ';' + str(acc) + '\n')

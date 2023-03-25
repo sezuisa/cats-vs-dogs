@@ -111,9 +111,9 @@ def run_model(count_of_epochs, model_number):
 	datagen.mean = [123.68, 116.779, 103.939]
 
 	# prepare iterator
-	train_it = datagen.flow_from_directory('data/train/',
+	train_it = datagen.flow_from_directory('dataset/train/',
 				class_mode='binary', batch_size=64, target_size=(224, 224))
-	test_it = datagen.flow_from_directory('data/test/',
+	test_it = datagen.flow_from_directory('dataset/test/',
 				class_mode='binary', batch_size=64, target_size=(224, 224))
 
 	# fit model
