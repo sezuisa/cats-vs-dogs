@@ -1,0 +1,7 @@
+iteration;datetime;elapsed_time;val_acc;acc;val_loss;loss
+1;2023-03-26_15-24-44;957.4326989650726;73.79174828529358;0.9714;0.8356;0.0935
+iteration;datetime;elapsed_time;acc
+iteration;datetime;elapsed_time;acc
+1;2023-03-26_16-13-35;1435.3377709388733;74.44007992744446
+iteration;datetime;elapsed_time;acc
+1;2023-03-26_16-43-45;1299.0501806735992;73.06483387947083

@@ -26,11 +26,11 @@ import sys
 
 #---------------------------------
 # CONSTANTS
-EPOCHS = 50
+EPOCHS = 10
 RUNS = 1
 TIMESTAMP = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 BASE_DIR = 'data'
-MODEL_NO = '3-4'
+MODEL_NO = '2'
 SEED_NUM = 1
 DEFAULT_OPT = optimizers.Adam(learning_rate=0.001)
 ITERATION = sys.argv[1]
@@ -163,7 +163,7 @@ def run_model(iteration):
 
     test_datagen = ImageDataGenerator(rescale=1.0/255.0)
     train_datagen = test_datagen
-    if MODEL_NO == '3-3' or MODEL_NO == '3-4':
+    if MODEL_NO == '3-3' or MODEL_NO == '3-4' or MODEL_NO == '1' or MODEL_NO == '2':
         train_datagen = ImageDataGenerator(rescale=1.0/255.0,
                 width_shift_range=0.1, height_shift_range=0.1, horizontal_flip=True)
 
