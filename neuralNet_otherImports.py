@@ -25,8 +25,10 @@ from shutil import copyfile
 from random import seed
 from random import random
 
+NOW = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+
 base_dir = 'data'
-model_no = '3-4'
+model_no = '1'
 seedNum = 1
 default_opt = Adam(learning_rate=0.001)
 
@@ -202,5 +204,5 @@ history_df.loc[:, ['loss', 'val_loss']].plot()
 history_df.loc[:, ['accuracy', 'val_accuracy']].plot()
 fig_nums = plt.get_fignums()
 figs = [plt.figure(n) for n in fig_nums]
-figs[0].savefig("files/model_" + model_no + "_loss.png")
-figs[1].savefig("files/model_" + model_no + "_accuracy.png")
+figs[0].savefig("files/model_" + model_no + str(NOW)+ "_loss.png")
+figs[1].savefig("files/model_" + model_no + str(NOW)+ "_accuracy.png")

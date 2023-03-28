@@ -19,6 +19,16 @@ def classify_image():
  # get the filename of the selected image
 	filename = filedialog.askopenfilename(initialdir="/", title="Select Image", filetypes=(("jpeg files", "*.jpg"), ("all files", "*.*")))
  
+	# load the image and classify it using the trained model
+	image = Image.open(filename).convert('RGB')
+	image = image.resize((200,200))
+	image = np.expand_dims(image, axis=0)
+	image = np.array(image)
+	image = image/255
+
+	model = load_model('model_3-4_50.h5')
+	result = model.predict(image)
+
 	# load the selected image
 	image = Image.open(filename)
 	# resize the image to fit in the GUI
@@ -28,16 +38,13 @@ def classify_image():
 	canvas.itemconfig(image_on_canvas, image=photo)
 	canvas.image = photo
 	
-	# load the image and classify it using the trained model
-	img = load_image(filename)
-	model = load_model('model_3-4.h5')
-	result = model.predict(img)
-	
+
+	print(str(result))
 	# display the result on the GUI
 	if result >= 0.5:
-		label.config(text="It's a dog!",font=("Arial",60))
+		label.config(text="It's a dog! \nPrediction result: " + str(result[0]),font=("Arial",40))
 	else:
-		label.config(text="It's a cat!",font=("Arial", 60))
+		label.config(text="It's a cat! \nPrediction result: " + str(result[0]),font=("Arial",40))
  
 # create the GUI
 root = tk.Tk()
